@@ -1,0 +1,24 @@
+{
+  "name": "@wc/backend",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "module": "src/index.ts",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:fresh": "rm -f ${DB_PATH:-weekly_cuisine.db} ${DB_PATH:-weekly_cuisine.db}-wal ${DB_PATH:-weekly_cuisine.db}-shm"
+  },
+  "dependencies": {
+    "@wc/engine": "workspace:*",
+    "@wc/types": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^5"
+  }
+}

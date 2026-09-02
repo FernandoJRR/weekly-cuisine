@@ -1,0 +1,20 @@
+{
+  "name": "@wc/tui",
+  "module": "src/index.tsx",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --watch src/index.tsx"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@opentui/core": "^0.5.10",
+    "@opentui/react": "^0.5.10",
+    "react": "^19.2.4",
+    "@wc/types": "workspace:*",
+    "@wc/engine": "workspace:*"
+  }
+}
