@@ -4,7 +4,8 @@
 
 Weekly cuisine manager: recipe + ingredient inventory with a weekly cooking plan
 (nutrient-goal solver, grocery list derivation). Bun monorepo with a terminal
-UI (OpenTUI/React), a plain `Bun.serve` HTTP API, and SQLite via Drizzle ORM.
+UI (OpenTUI/React), a browser SPA (React + Vite), a plain `Bun.serve` HTTP API,
+and SQLite via Drizzle ORM.
 
 ## Commands
 
@@ -14,21 +15,30 @@ bun install                          # install all workspaces
 # type-check (run from inside each workspace; there is no test suite):
 (cd apps/backend && bunx tsc --noEmit)
 (cd apps/tui && bunx tsc --noEmit)
+(cd apps/web && bunx tsc --noEmit)
 (cd packages/engine && bunx tsc --noEmit)
 (cd packages/types && bunx tsc --noEmit)
+(cd apps/web && bun run build)      # the only workspace with a build step
 ```
 
-Run the two apps in separate terminals:
+Run the apps in separate terminals:
 
 ```bash
 cd apps/backend && bun run dev       # API on :3000 (PORT env), watch mode
 cd apps/tui     && bun run dev       # TUI; needs the backend running
+cd apps/web     && bun run dev       # SPA on :5173; needs the backend running
+cd apps/web     && bun run build     # production bundle into apps/web/dist
+cd apps/web     && bun run preview   # serve that bundle (set VITE_API_URL)
 ```
 
 Env:
 - `PORT` (backend, default 3000)
 - `DB_PATH` (backend, default `weekly_cuisine.db` — resolved against CWD, so run from `apps/backend/`)
+- `CORS_ORIGIN` (backend, default `*` — the origin allowed to call the API)
 - `API_URL` (tui, default `http://localhost:3000`)
+- `VITE_API_URL` (web, default `/api` — the dev proxy; set it to the backend URL
+  for a built/previewed bundle, which then relies on the backend's CORS headers)
+- `VITE_PROXY_TARGET` (web dev only, default `http://localhost:3000`)
 
 There is no test script, no formatter/linter config, and **no git repository** as of 2026-08.
 
@@ -39,10 +49,12 @@ packages/types    @wc/types    pure shared TypeScript types (no runtime code)
 packages/engine   @wc/engine   pure domain logic; only dep is @wc/types
 apps/backend      @wc/backend  Bun.serve API, Drizzle + bun:sqlite, zod validation
 apps/tui          @wc/tui      OpenTUI React TUI, fetches the backend
+apps/web          @wc/web      React 19 + Vite browser SPA, fetches the backend
 ```
 
-Dependency direction is strictly `tui/backend -> engine -> types`. Keep
-`@wc/engine` pure (no I/O, no deps beyond `@wc/types`).
+Dependency direction is strictly `tui/web/backend -> engine -> types`. Keep
+`@wc/engine` pure (no I/O, no deps beyond `@wc/types`) — the web app imports it
+straight into the browser bundle.
 
 ## API
 
@@ -63,6 +75,10 @@ Manual routing in `apps/backend/src/index.ts` — no framework. Endpoints:
 Response contract (see `routes/helpers.ts`): success = raw JSON body (200/201),
 empty = 204, error = `{ "error": string }` (400/404/405/500). Request bodies are
 validated with zod schemas in `apps/backend/src/validation/schemas.ts`.
+
+CORS: `fetch` answers `OPTIONS` with `preflight()` (204 + headers) and wraps every
+routed response in `withCors()` (`routes/helpers.ts`). The router itself lives in
+`handle(req)` and is unaware of CORS; statuses and bodies are unchanged.
 
 The TUI covers all five resources: recipes (with cook mode), ingredients,
 nutrients, search, and plans (create/edit/grocery/solve). Ingredient forms and
@@ -106,6 +122,17 @@ values were changed:
   hint bars, `█/░` progress blocks in cook mode, `●` pager dots in the
   status bar (height 2 — 1 row is eaten by its top border).
 
+## Web app
+
+`apps/web` is the browser translation of the same design system. Layer 1 colors in
+`src/styles/tokens.css` are transcribed byte-for-byte from `apps/tui/src/tokens.ts`;
+the PDF's web-only layers (type scale, 4px spacing, 2px radius, mint glow, ≤250ms
+motion) live in the same file. **Raw hex belongs in `tokens.css` and nowhere else** —
+components reference tokens semantically, via CSS Modules. Structure mirrors the TUI:
+`api.ts` fetch client, one hook per resource (`useState` mirror + `refresh()`), a
+two-panel shell (`App.tsx`: Sidebar | Outlet + StatusBar), and hook errors flashed
+through `useStatusMessage`. Routing is React Router, one route per screen.
+
 ## Gotchas / known issues
 
 - **Schema changes are migrations.** `apps/backend/src/db/schema.ts` is the single
@@ -124,8 +151,19 @@ values were changed:
   layout, an explicit height that fits, no outer `gap`, and fixed
   `width`+`padEnd` on key/desc text nodes. Do not re-add a `gap` there
   without re-rendering help.
+- **Vite needs `server.fs.allow: ["../.."]`.** `@wc/types`/`@wc/engine` resolve
+  through Bun workspace symlinks to raw `.ts` *outside* `apps/web`; without the
+  allow-list the dev server refuses to serve them. They are also in
+  `optimizeDeps.exclude` — they are linked source, not a prebundled dep.
+- **Two ways for the browser to reach the API.** In dev, `api.ts` defaults to `/api`
+  and Vite proxies it to `:3000` (same-origin, no CORS involved). A built bundle
+  needs `VITE_API_URL` pointed at the backend, and then genuinely depends on the
+  backend's CORS headers — set `CORS_ORIGIN` instead of leaving it `*` if this is
+  ever deployed somewhere shared.
 - `design_system_weekly_cuisine.pdf` is a design system for a different app
-  ("Receipt Manager"), not this one.
+  ("Receipt Manager") *in name only* — its Layer 1 color tokens are identical to
+  `apps/tui/src/tokens.ts`, and its Layers 2-8 are the source for
+  `apps/web/src/styles/tokens.css`.
 
 <!-- pane-agent-context:start -->
 ## Pane

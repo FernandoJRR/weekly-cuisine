@@ -1,0 +1,13 @@
+.hint {
+  display: inline-flex;
+  gap: var(--space-4);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+}
+
+.key {
+  color: var(--accent-hi);
+  font-weight: 700;
+}
+
+.label { color: var(--text-dim); }

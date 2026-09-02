@@ -1,0 +1,28 @@
+.statusbar {
+  height: var(--statusbar-h);
+  flex: 0 0 var(--statusbar-h);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 0 var(--gutter);
+  background: var(--bg-surface);
+  border-top: var(--border-default);
+  font-size: var(--text-xs);
+}
+
+.message {
+  color: var(--status-success);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spacer { flex: 1 1 auto; }
+
+.dots {
+  display: inline-flex;
+  gap: var(--space-1);
+  color: var(--bg-border);
+}
+
+.dotActive { color: var(--accent-hi); }

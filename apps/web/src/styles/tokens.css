@@ -1,0 +1,87 @@
+/*
+ * Weekly Cuisine design tokens.
+ *
+ * Layer 1 (color) is transcribed byte-for-byte from apps/tui/src/tokens.ts so the
+ * browser client and the terminal client are the same visual language.
+ * Layers 2-5 come from the design system PDF and cover what the terminal medium
+ * never needed: a type scale, a 4px spacing system, shape, and motion.
+ *
+ * Raw hex belongs in this file and nowhere else.
+ */
+
+:root {
+  /* ---- Layer 1 - color: identical to apps/tui/src/tokens.ts ---- */
+
+  /* Single accent, named by gradient stop (Omarchy colors.toml model). */
+  --accent-hi: #72CFAA;
+  --accent-mid: #3EB489;
+  --accent-lo: #2A7D60;
+  --accent-tint: #C2EDE0; /* PDF only - no TUI equivalent */
+
+  --bg-base: #191817;
+  --bg-surface: #222120;
+  --bg-elevated: #2C2B29;
+  --bg-overlay: #333230;
+  --bg-border: #3A3936;
+
+  --text-bright: #FFFFFF;
+  --text-default: #F0F0F0;
+  --text-muted: #A0A0A0;
+  --text-dim: #505050;
+
+  --status-success: #3EB489;
+  --status-error: #E05C6A;
+  --status-warning: #D4A84B;
+  --status-info: #5B9BD5;
+
+  /* ---- Layer 2 - typography (scale only; families/weights land with the fonts) ---- */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  --text-3xl: 48px;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-loose: 1.8;
+
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.08em;
+  --tracking-widest: 0.14em; /* ALL CAPS labels */
+
+  /* ---- Layer 3 - spacing: 4px atomic unit ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  --sidebar-w: 220px;
+  --sidebar-collapsed-w: 48px;
+  --content-max: 860px;
+  --statusbar-h: 28px;
+  --gutter: 24px;
+
+  /* ---- Layer 4 - shape & depth (web only; the TUI is sharp-cornered) ---- */
+  --radius-sm: 2px;
+  --border-default: 1px solid var(--bg-border);
+  --border-active: 1px solid var(--accent-mid);
+  --border-error: 1px solid var(--status-error);
+  --shadow-glow-mint: 0 0 8px #3EB48944; /* depth via mint glow, never heavy shadows */
+
+  /* ---- Layer 5 - motion (never exceed 250ms) ---- */
+  --duration-fast: 80ms;
+  --duration-normal: 150ms;
+  --duration-slow: 250ms;
+  --ease-sharp: cubic-bezier(0, 0, 0.2, 1);
+}
