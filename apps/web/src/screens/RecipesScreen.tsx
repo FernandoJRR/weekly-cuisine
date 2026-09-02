@@ -8,6 +8,7 @@ import { useIngredients } from "../hooks/useIngredients"
 import { useNutrients } from "../hooks/useNutrients"
 import { Button } from "../components/Button"
 import { ConfirmDialog } from "../components/ConfirmDialog"
+import { CookMode } from "../components/CookMode"
 import { DataTable, type DataTableColumn } from "../components/DataTable"
 import { FormField } from "../components/FormField"
 import { ItemsEditor, type NewRecipeItem } from "../components/ItemsEditor"
@@ -55,6 +56,7 @@ export function RecipesScreen() {
     recipes, loading, error, modalOpen, confirmOpen,
     add, update, remove,
     openModal, closeModal, openConfirm, closeConfirm,
+    cookMode, openCook, closeCook, nextStep, prevStep,
   } = useRecipes()
   const { ingredients } = useIngredients()
   const { nutrients: nutrientRegistry } = useNutrients()
@@ -68,6 +70,7 @@ export function RecipesScreen() {
   useEffect(() => { if (error) flash(error) }, [error, flash])
 
   const selected = recipes.find(r => r.id === routeId) ?? null
+  const cookRecipe = cookMode.open ? recipes.find(r => r.id === cookMode.recipeId) ?? null : null
 
   // Per-serving nutrients are computed client-side — this is the one place the
   // browser imports engine *functions* rather than just types. deriveRecipeNutrients
@@ -294,6 +297,9 @@ export function RecipesScreen() {
             )}
 
             <div className={s.detailActions}>
+              {selected.steps.length > 0 && (
+                <Button variant="primary" onClick={() => openCook(selected.id)}>cook</Button>
+              )}
               <Button onClick={() => openEdit(selected)}>edit</Button>
               <Button variant="danger" onClick={openConfirm}>delete</Button>
             </div>
@@ -345,6 +351,17 @@ export function RecipesScreen() {
 
       {confirmOpen && selected && (
         <ConfirmDialog itemName={selected.name} onConfirm={confirmDelete} onCancel={closeConfirm} />
+      )}
+
+      {cookMode.open && cookRecipe && (
+        <CookMode
+          recipe={cookRecipe}
+          cookMode={cookMode}
+          ingredients={ingredients}
+          onNext={() => nextStep(cookRecipe.steps.length)}
+          onPrev={prevStep}
+          onClose={closeCook}
+        />
       )}
     </div>
   )

@@ -93,3 +93,20 @@ a {
 *::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/*
+ * Layer 5 (motion) never exceeds --duration-slow (250ms), and honors the OS
+ * reduced-motion preference by collapsing every transition/animation to
+ * effectively-instant rather than removing it outright — nothing relies on an
+ * animation actually completing for correctness.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

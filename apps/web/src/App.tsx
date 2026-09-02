@@ -1,6 +1,8 @@
 import { Outlet, useOutletContext } from "react-router-dom"
+import { HelpOverlay } from "./components/HelpOverlay"
 import { Sidebar } from "./components/Sidebar"
 import { StatusBar } from "./components/StatusBar"
+import { useGlobalKeys } from "./hooks/useGlobalKeys"
 import { useStatusMessage } from "./hooks/useStatusMessage"
 import s from "./App.module.css"
 
@@ -17,6 +19,7 @@ export function useFlash(): (msg: string) => void {
 /** Two-panel shell: sidebar | screen, with the status bar underneath. */
 export function App() {
   const status = useStatusMessage()
+  const { showHelp, closeHelp } = useGlobalKeys()
   const context: AppContext = { flash: status.flash }
 
   return (
@@ -28,6 +31,7 @@ export function App() {
         </main>
       </div>
       <StatusBar message={status.message} />
+      {showHelp && <HelpOverlay onClose={closeHelp} />}
     </div>
   )
 }

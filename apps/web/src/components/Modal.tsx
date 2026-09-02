@@ -22,6 +22,11 @@ interface ModalProps {
 /**
  * bg-elevated panel over a dimmed page, mint-glow depth, Esc or backdrop to close.
  * The web equivalent of the TUI's double-bordered absolute box.
+ *
+ * The backdrop carries `data-overlay` so `useGlobalKeys` can detect that a modal
+ * (or the cook-mode overlay, which marks itself the same way) is on screen and
+ * yield to it, without every screen having to report its own modal state up to
+ * the shell.
  */
 export function Modal({
   title, onClose, onSubmit, variant = "default", role = "dialog",
@@ -54,7 +59,7 @@ export function Modal({
   )
 
   return (
-    <div className={s.backdrop} role="presentation" onMouseDown={onClose}>
+    <div className={s.backdrop} data-overlay role="presentation" onMouseDown={onClose}>
       {onSubmit ? (
         <form
           className={panelClasses}

@@ -133,6 +133,20 @@ components reference tokens semantically, via CSS Modules. Structure mirrors the
 two-panel shell (`App.tsx`: Sidebar | Outlet + StatusBar), and hook errors flashed
 through `useStatusMessage`. Routing is React Router, one route per screen.
 
+`App.tsx` also owns the global keymap (`hooks/useGlobalKeys.ts`) — the browser
+translation of the TUI's `App`-level `useKeyboard` handler: `?` toggles
+`HelpOverlay`, `/` jumps to search, `Tab` cycles the five screens, and `g`/`s` jump
+to a plan's grocery/solve view. It never fires while the user is typing into a
+form field, and it yields entirely whenever an overlay (a `Modal`/`ConfirmDialog`
+or the full-screen `CookMode`) is on screen — detected generically via a
+`data-overlay` attribute on the overlay's root, rather than every screen lifting
+its modal-open state up to the shell. Any new full-screen overlay must carry
+`data-overlay` or the global keymap will fire underneath it. Cook mode itself
+(`components/CookMode.tsx`, state machine in `hooks/useRecipes.ts`) is a
+line-for-line port of the TUI's cook overlay — same `█/░` progress glyphs, same
+←/h →/l/Esc keys, driven by its own local `keydown` listener like `Modal` rather
+than through `useGlobalKeys`.
+
 ## Gotchas / known issues
 
 - **Schema changes are migrations.** `apps/backend/src/db/schema.ts` is the single
@@ -164,6 +178,14 @@ through `useStatusMessage`. Routing is React Router, one route per screen.
   ("Receipt Manager") *in name only* — its Layer 1 color tokens are identical to
   `apps/tui/src/tokens.ts`, and its Layers 2-8 are the source for
   `apps/web/src/styles/tokens.css`.
+- **Overlays must self-report via `data-overlay`.** `useGlobalKeys` detects an
+  open `Modal`/`ConfirmDialog`/`CookMode` with `document.querySelector("[data-overlay]")`
+  rather than reading each screen's modal state — forgetting the attribute on a
+  new overlay lets global shortcuts (`?`, `/`, `Tab`, `g`/`s`) fire underneath it.
+- **`prefers-reduced-motion` is handled once, globally**, in `styles/base.css`
+  (collapses every `animation`/`transition` duration to ~0 rather than removing
+  it) — new components don't need their own media query as long as they use the
+  shared `--duration-*` tokens.
 
 <!-- pane-agent-context:start -->
 ## Pane
