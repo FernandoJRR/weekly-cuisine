@@ -5,6 +5,8 @@ import { App } from "./App"
 import { IngredientsScreen } from "./screens/IngredientsScreen"
 import { NutrientsScreen } from "./screens/NutrientsScreen"
 import { PlaceholderScreen } from "./screens/PlaceholderScreen"
+import { RecipesScreen } from "./screens/RecipesScreen"
+import { SearchScreen } from "./screens/SearchScreen"
 import "./styles/fonts"
 import "./styles/base.css"
 
@@ -17,11 +19,12 @@ createRoot(root).render(
       <Routes>
         <Route element={<App />}>
           <Route index element={<Navigate to="/recipes" replace />} />
-          {/* Real through phase 2; the rest land in phases 3-4. */}
+          {/* Real through phase 3; plan lands in phase 4. */}
           <Route path="/nutrients" element={<NutrientsScreen />} />
           <Route path="/ingredients" element={<IngredientsScreen />} />
-          <Route path="/recipes" element={<PlaceholderScreen title="recipes" phase="phase 3" />} />
-          <Route path="/search" element={<PlaceholderScreen title="search" phase="phase 3" />} />
+          <Route path="/recipes" element={<RecipesScreen />} />
+          <Route path="/recipes/:id" element={<RecipesScreen />} />
+          <Route path="/search" element={<SearchScreen />} />
           <Route path="/plan" element={<PlaceholderScreen title="plans" phase="phase 4" />} />
           <Route path="*" element={<Navigate to="/recipes" replace />} />
         </Route>
