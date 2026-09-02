@@ -34,7 +34,23 @@
   --status-warning: #D4A84B;
   --status-info: #5B9BD5;
 
-  /* ---- Layer 2 - typography (scale only; families/weights land with the fonts) ---- */
+  /* ---- Layer 2 - typography ---- */
+
+  /*
+   * Three mono faces, bundled from Fontsource (see styles/fonts.ts), each backed
+   * by a system-mono fallback stack so the app degrades gracefully.
+   *   display - headings, brand, pane + dialog titles
+   *   body    - prose, labels, buttons (the document default)
+   *   mono    - data: ids, quantities, units, table cells
+   */
+  --font-display: "Azeret Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-body: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --weight-regular: 400;
+  --weight-medium: 500; /* display/mono only - Space Mono has no 500 cut */
+  --weight-bold: 700;
+
   --text-xs: 11px;
   --text-sm: 12px;
   --text-base: 14px;

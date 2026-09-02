@@ -73,6 +73,43 @@
   color: var(--text-dim);
 }
 
+.sectionLabel {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.nutrientList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.nutrientRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--bg-border);
+  color: var(--text-default);
+}
+
+.nutrientValue {
+  color: var(--text-muted);
+}
+
+.meta {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-dim);
+}
+
 .detailActions {
   display: flex;
   gap: var(--space-3);
@@ -84,17 +121,19 @@
   font-size: var(--text-sm);
 }
 
-/* ---- form ---- */
-
-.toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  color: var(--text-default);
-  font-size: var(--text-base);
-  cursor: pointer;
+.hintText {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
 }
 
-.toggle input {
-  accent-color: var(--accent-mid);
+/* ---- modal form layout ---- */
+
+.fieldRow {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.fieldRow > * {
+  flex: 1 1 0;
+  min-width: 0;
 }

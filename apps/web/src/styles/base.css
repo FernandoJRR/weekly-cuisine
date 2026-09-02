@@ -21,11 +21,22 @@ body,
 body {
   background: var(--bg-base);
   color: var(--text-default);
-  /* Layer 2 families arrive with the bundled faces; until then, system mono. */
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--font-body);
   font-size: var(--text-base);
+  font-weight: var(--weight-regular);
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
 }
 
 input,

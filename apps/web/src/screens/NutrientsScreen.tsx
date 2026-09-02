@@ -2,7 +2,14 @@ import { useEffect, useState, type FormEvent } from "react"
 import type { NutrientEntry } from "@wc/types"
 import { useFlash } from "../App"
 import { useNutrients } from "../hooks/useNutrients"
+import { Button } from "../components/Button"
+import { ConfirmDialog } from "../components/ConfirmDialog"
+import { DataTable, type DataTableColumn } from "../components/DataTable"
+import { FormField } from "../components/FormField"
 import { KeyHint } from "../components/KeyHint"
+import { Modal } from "../components/Modal"
+import { Tag } from "../components/Tag"
+import { TextInput } from "../components/TextInput"
 import s from "./NutrientsScreen.module.css"
 
 interface NutrientDraft {
@@ -31,18 +38,6 @@ export function NutrientsScreen() {
 
   // The shell owns the flash channel; hook errors surface through it, as in the TUI.
   useEffect(() => { if (error) flash(error) }, [error, flash])
-
-  // Esc closes the topmost overlay (the global keymap proper lands in phase 5).
-  useEffect(() => {
-    if (!modalOpen && !confirmOpen) return
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key !== "Escape") return
-      if (confirmOpen) closeConfirm()
-      else closeModal()
-    }
-    document.addEventListener("keydown", onKeyDown)
-    return () => document.removeEventListener("keydown", onKeyDown)
-  }, [modalOpen, confirmOpen, closeModal, closeConfirm])
 
   const selected = nutrients.find(n => n.id === selectedId) ?? nutrients[0] ?? null
 
@@ -90,6 +85,12 @@ export function NutrientsScreen() {
     flash(`deleted "${name}"`)
   }
 
+  const columns: DataTableColumn<NutrientEntry>[] = [
+    { key: "name", header: "name", render: n => n.name },
+    { key: "id", header: "id", render: n => n.id },
+    { key: "unit", header: "unit", render: n => n.unit, align: "right", width: "20%" },
+  ]
+
   return (
     <div className={s.screen}>
       {/* List pane */}
@@ -97,25 +98,19 @@ export function NutrientsScreen() {
         <header className={s.paneHeader}>
           <h1 className={s.paneTitle}>nutrients</h1>
           <span className={s.spacer} />
-          <button type="button" className={`${s.button} ${s.buttonPrimary}`} onClick={openAdd}>
-            [ ADD ]
-          </button>
+          <Button variant="primary" onClick={openAdd}>add</Button>
         </header>
-        <div className={s.rows}>
-          {nutrients.map(entry => (
-            <button
-              type="button"
-              key={entry.id}
-              className={entry.id === selected?.id ? `${s.row} ${s.rowActive}` : s.row}
-              onClick={() => setSelectedId(entry.id)}
-            >
-              <span className={s.rowName}>{entry.name}</span>
-              <span className={s.rowMeta}>{entry.id} · {entry.unit}</span>
-            </button>
-          ))}
-        </div>
+        <DataTable
+          columns={columns}
+          rows={nutrients}
+          rowKey={n => n.id}
+          onRowClick={n => setSelectedId(n.id)}
+          isActive={n => n.id === selected?.id}
+          emptyMessage={loading ? "loading…" : "no nutrients yet"}
+          footer={loading ? "loading…" : `${nutrients.length} ${nutrients.length === 1 ? "entry" : "entries"}`}
+        />
         <footer className={s.paneFooter}>
-          {loading ? "loading…" : `${nutrients.length} ${nutrients.length === 1 ? "entry" : "entries"}`}
+          <KeyHint hints={["a=add", "e=edit", "d=delete"]} />
         </footer>
       </section>
 
@@ -127,12 +122,13 @@ export function NutrientsScreen() {
               <h2 className={s.detailName}>{selected.name}</h2>
               <p className={s.detailMeta}>id: {selected.id}  ·  unit: {selected.unit}</p>
             </header>
-            <span className={selected.targetable ? `${s.tag} ${s.tagSuccess}` : s.tag}>
-              [{selected.targetable ? "targetable" : "informational"}]
-            </span>
+            <Tag
+              label={selected.targetable ? "targetable" : "informational"}
+              variant={selected.targetable ? "success" : "neutral"}
+            />
             <div className={s.detailActions}>
-              <button type="button" className={s.button} onClick={() => openEdit(selected)}>[ EDIT ]</button>
-              <button type="button" className={`${s.button} ${s.buttonDanger}`} onClick={openConfirm}>[ DELETE ]</button>
+              <Button onClick={() => openEdit(selected)}>edit</Button>
+              <Button variant="danger" onClick={openConfirm}>delete</Button>
             </div>
           </div>
         ) : (
@@ -142,92 +138,62 @@ export function NutrientsScreen() {
 
       {/* Add / edit modal */}
       {modalOpen && (
-        <div
-          className={s.backdrop}
-          role="presentation"
-          onClick={closeModal}
+        <Modal
+          title={editingId ? `edit nutrient ${editingId}` : "add nutrient"}
+          onClose={closeModal}
+          onSubmit={save}
+          footerHint={<KeyHint hints={["esc=cancel"]} />}
+          footer={
+            <>
+              <Button onClick={closeModal}>cancel</Button>
+              <Button variant="primary" type="submit">save</Button>
+            </>
+          }
         >
-          <form
-            className={s.dialog}
-            role="dialog"
-            aria-modal="true"
-            aria-label={editingId ? "edit nutrient" : "add nutrient"}
-            onClick={e => e.stopPropagation()}
-            onSubmit={save}
+          <FormField
+            label="id"
+            hint={!editingId ? "lowercase slug — letters, digits, underscores" : undefined}
           >
-            <div className={s.dialogTitle}>{editingId ? `edit nutrient ${editingId}` : "add nutrient"}</div>
-            <div className={s.dialogBody}>
-              <label className={s.field}>
-                <span className={s.label}>id</span>
-                <input
-                  className={s.input}
-                  value={draft.id}
-                  disabled={editingId !== null}
-                  placeholder="e.g. sodium"
-                  autoFocus={editingId === null}
-                  onChange={e => setDraft(d => ({ ...d, id: e.target.value }))}
-                />
-                {!editingId && <span className={s.hint}>lowercase slug — letters, digits, underscores</span>}
-              </label>
-              <label className={s.field}>
-                <span className={s.label}>name</span>
-                <input
-                  className={s.input}
-                  value={draft.name}
-                  autoFocus={editingId !== null}
-                  onChange={e => setDraft(d => ({ ...d, name: e.target.value }))}
-                />
-              </label>
-              <label className={s.field}>
-                <span className={s.label}>unit</span>
-                <input
-                  className={s.input}
-                  value={draft.unit}
-                  placeholder="e.g. mg"
-                  onChange={e => setDraft(d => ({ ...d, unit: e.target.value }))}
-                />
-              </label>
-              <label className={s.toggle}>
-                <input
-                  type="checkbox"
-                  checked={draft.targetable}
-                  onChange={e => setDraft(d => ({ ...d, targetable: e.target.checked }))}
-                />
-                targetable
-              </label>
-            </div>
-            <div className={s.dialogFooter}>
-              <KeyHint hints={["esc=cancel"]} />
-              <span className={s.spacer} />
-              <button type="button" className={s.button} onClick={closeModal}>[ CANCEL ]</button>
-              <button type="submit" className={`${s.button} ${s.buttonPrimary}`}>[ SAVE ]</button>
-            </div>
-          </form>
-        </div>
+            <TextInput
+              value={draft.id}
+              disabled={editingId !== null}
+              placeholder="e.g. sodium"
+              autoFocus={editingId === null}
+              onChange={e => setDraft(d => ({ ...d, id: e.target.value }))}
+            />
+          </FormField>
+          <FormField label="name">
+            <TextInput
+              value={draft.name}
+              autoFocus={editingId !== null}
+              onChange={e => setDraft(d => ({ ...d, name: e.target.value }))}
+            />
+          </FormField>
+          <FormField label="unit">
+            <TextInput
+              value={draft.unit}
+              placeholder="e.g. mg"
+              onChange={e => setDraft(d => ({ ...d, unit: e.target.value }))}
+            />
+          </FormField>
+          <label className={s.toggle}>
+            <input
+              type="checkbox"
+              checked={draft.targetable}
+              onChange={e => setDraft(d => ({ ...d, targetable: e.target.checked }))}
+            />
+            targetable
+          </label>
+        </Modal>
       )}
 
       {/* Delete confirm */}
       {confirmOpen && selected && (
-        <div className={s.backdrop} role="presentation" onClick={closeConfirm}>
-          <div
-            className={`${s.dialog} ${s.dialogDanger}`}
-            role="alertdialog"
-            aria-modal="true"
-            aria-label="confirm delete"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className={s.dialogTitle}>confirm</div>
-            <div className={s.dialogBody}>
-              <p className={s.confirmText}>delete &quot;{selected.name}&quot;?</p>
-              <p className={s.confirmNote}>this cannot be undone.</p>
-            </div>
-            <div className={s.dialogFooter}>
-              <span className={s.spacer} />
-              <button type="button" className={s.button} onClick={closeConfirm}>[ CANCEL ]</button>
-              <button type="button" className={`${s.button} ${s.buttonDanger}`} onClick={confirmDelete}>[ DELETE ]</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmDialog
+          itemName={selected.name}
+          onConfirm={confirmDelete}
+          onCancel={closeConfirm}
+        />
       )}
     </div>
   )
