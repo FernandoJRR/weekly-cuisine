@@ -40,7 +40,9 @@ Env:
   for a built/previewed bundle, which then relies on the backend's CORS headers)
 - `VITE_PROXY_TARGET` (web dev only, default `http://localhost:3000`)
 
-There is no test script, no formatter/linter config, and **no git repository** as of 2026-08.
+There is no test script and no formatter/linter config, so verification is
+`bunx tsc --noEmit` per workspace plus `bun run build` in `apps/web`. The repo
+lives at `github.com/FernandoJRR/weekly-cuisine`; `main` is the default branch.
 
 ## Layout
 
