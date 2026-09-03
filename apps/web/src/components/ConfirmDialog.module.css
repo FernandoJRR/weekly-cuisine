@@ -1,0 +1,9 @@
+.question {
+  color: var(--text-bright);
+  font-size: var(--text-base);
+}
+
+.note {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}

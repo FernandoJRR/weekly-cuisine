@@ -1,0 +1,142 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.sectionLabel {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border: var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+}
+
+.rowMain {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rowTitle {
+  color: var(--accent-hi);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+}
+
+.rowBody {
+  color: var(--text-default);
+  font-size: var(--text-sm);
+}
+
+.rowRefs {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.remove {
+  border: none;
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: var(--text-base);
+  line-height: 1;
+  padding: 0 var(--space-1);
+}
+
+.remove:hover {
+  color: var(--status-error);
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+}
+
+.addForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 56px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-surface);
+  border: var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-default);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  resize: vertical;
+  transition:
+    border-color var(--duration-fast) var(--ease-sharp),
+    box-shadow var(--duration-fast) var(--ease-sharp);
+}
+
+.textarea::placeholder {
+  color: var(--text-dim);
+}
+
+.textarea:focus {
+  outline: none;
+  border: var(--border-active);
+  box-shadow: var(--shadow-glow-mint);
+}
+
+.fieldRow {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.timerInput {
+  width: 96px;
+  flex: 0 0 auto;
+}
+
+.refs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+}
+
+.refsLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.refOption {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--text-default);
+  cursor: pointer;
+}
+
+.refOption input {
+  accent-color: var(--accent-mid);
+}

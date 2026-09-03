@@ -1,0 +1,14 @@
+.tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  white-space: nowrap;
+}
+
+.default { color: var(--text-muted); }
+.info { color: var(--status-info); }
+.success { color: var(--status-success); }
+.warning { color: var(--status-warning); }
+.danger { color: var(--status-error); }
+.neutral { color: var(--text-dim); }

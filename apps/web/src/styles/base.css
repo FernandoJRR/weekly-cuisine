@@ -1,0 +1,112 @@
+/* Reset + document defaults. Every value comes from tokens.css. */
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-default);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: none;
+  border-color: var(--accent-mid);
+  box-shadow: var(--shadow-glow-mint);
+}
+
+::selection {
+  background: var(--accent-lo);
+  color: var(--text-bright);
+}
+
+/* Scrollbars in the warm-charcoal palette rather than the browser default. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--bg-border);
+  border-radius: var(--radius-sm);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/*
+ * Layer 5 (motion) never exceeds --duration-slow (250ms), and honors the OS
+ * reduced-motion preference by collapsing every transition/animation to
+ * effectively-instant rather than removing it outright — nothing relies on an
+ * animation actually completing for correctness.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
